@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>名前リスト</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% if logged_in_user %}
+        <span class="text-muted">ログイン中：{{ logged_in_user }}</span>
+    {% endif %}
+    <div class="container mt-5">
+        <form method="get" action="/names" class="mb-4 d-flex" style="max-width: 400px;">
+            <input type="text" name="q" class="form-control me-2" placeholder="名前を検索">
+            <button type="submit" class="btn btn-outline-primary">検索</button>
+        </form>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1 class="mb-0">登録された名前一覧</h1>
+            </div>              
+            <a href="/logout" class="btn btn-outline-danger btn-sm">ログアウト</a>
+        </div>
+        {% if keyword %}
+            <p class="text-muted">「{{ keyword }}」の検索結果：</p>
+        {% endif %}
+
+
+        {% if users %}
+            <ul class="list-group">
+                {% for user in users %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        {% if user.image_filename %}
+                            <img src="{{ url_for('static', filename='uploads/' + user.image_filename) }}" class="img-thumbnail me-3" style="max-height: 100px;">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='no-image.png') }}" class="img-thumbnail me-3" style="max-height: 100px;">
+                        {% endif %}
+                        
+                        <!-- 名前と登録日時を縦に並べて左揃え -->
+                        <div class="d-flex flex-column">
+                            <strong class="text-start">{{ user.name }}</strong>
+                            <small class="text-muted text-start">登録日時：{{ user.created_at }}</small>
+                        </div>
+                    </div>                      
+                    <div>
+                        <form action="/edit/{{ user.id }}" method="get" class="d-inline">
+                            <button class="btn btn-secondary btn-sm">編集</button>
+                        </form>
+                        <!-- 削除ボタン（モーダルを開く） -->
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ user.id }}">
+                            削除
+                        </button>
+                        
+                        <!-- モーダル本体 -->
+                        <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ user.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ user.id }}">削除の確認</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+                                </div>
+                                <div class="modal-body">
+                                本当に「{{ user.name }}」を削除しますか？
+                                </div>
+                                <div class="modal-footer">
+                                <form action="/delete/{{ user.id }}" method="post">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                                    <button type="submit" class="btn btn-danger">削除する</button>
+                                </form>
+                                </div>
+                            </div>
+                            </div>
+                        </div>  
+                    </div>
+                </li>                
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info">まだ名前は登録されていません。</div>
+        {% endif %}
+
+        <a href="/" class="btn btn-link mt-3">← ホームに戻る</a><br>
+        <a href="/export" class="btn btn-outline-success mb-3">CSVをダウンロード</a>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

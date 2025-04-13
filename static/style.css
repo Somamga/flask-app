@@ -1,0 +1,27 @@
+body {
+    font-family: sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    text-align: center;
+    padding: 2em;
+}
+
+h1 {
+    color: #0077cc;
+}
+
+a {
+    color: #0077cc;
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+li {
+    margin: 5px 0;
+}
+img {
+    object-fit: cover;
+}
